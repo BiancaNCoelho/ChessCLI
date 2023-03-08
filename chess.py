@@ -23,20 +23,20 @@ class Game():
 		# Promotes the Pawn
 		pass
 	
-	def is_valid_move(move_from,move_to,board):
+	def is_valid_move(self,move_from, move_to, board, piece):
 
 		if piece == 'p' or piece == 'P':
-			return self.pieces.is_valid_move_pawn(move_from,move_to,board)
+			return self.pieces.is_valid_move_pawn(move_from, move_to, board)
 		if piece == 'b' or piece == 'B':
-			return self.pieces.is_valid_move_bishop(move_from,move_to,board)
+			return self.pieces.is_valid_move_bishop(move_from, move_to, board)
 		if piece == 'k' or piece == 'K':
-			return self.pieces.is_valid_move_king(move_from,move_to,board)
+			return self.pieces.is_valid_move_king(move_from, move_to, board)
 		if piece == 'q' or piece == 'Q':
-			return self.pieces.is_valid_move_queen(move_from,move_to,board)
+			return self.pieces.is_valid_move_queen(move_from, move_to, board)
 		if piece == 'r' or piece == 'R':
-			return self.pieces.is_valid_move_rook(move_from,move_to,board)
+			return self.pieces.is_valid_move_rook(move_from, move_to, board)
 		if piece == 'n' or piece == 'N':
-			return self.pieces.is_valid_move_knight(move_from,move_to,board)
+			return self.pieces.is_valid_move_knight(move_from, move_to, board)
 		
 		return False
 		
@@ -47,20 +47,26 @@ class Game():
 				num_from = i
 			if move_to[0] == col[i]:
 				num_to = i
-				
+		
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i
+		
 		b = self.board.get_board()
 		
-		if b[int(move_from[1])][num_from] == ' ':
+		if b[num_l_from][num_from] == ' ':
 			print(f'6:Não há uma peça nesta posição.')
 			return
 		
-		piece = b[int(move_from[1])][num_from]
+		piece = b[num_l_from][num_from]
 		
 		if self.check_piece_color(piece):
 			print(f'4: Não é a sua peça')
 			return
 		
-		target = b[int(move_to[1])][num_to]
+		target = b[num_l_to][num_to]
 		if piece.isupper() and target.isupper():
 			print(f"5: Não pode comer sua própria peça.")
 			return
@@ -68,15 +74,15 @@ class Game():
 			print(f'5: Não pode comer sua própria peça')
 			return
 		
-		if self.is_valid_move(move_from,move_to,b):
+		if self.is_valid_move(move_from, move_to, b, piece):
 		
 			if target == ' ':
-				b[int(move_from[1])][num_from]	= ' ' 
-				b[int(move_to[1])][num_to] = piece
+				b[num_l_from][num_from]	= ' ' 
+				b[num_l_to][num_to] = piece
 				self.board.update_board(b)						
 			if target in black or target in white:
-				b[int(move_from[1])][num_from]	= ' ' 
-				b[int(move_to[1])][num_to] = piece
+				b[num_l_from][num_from]	= ' ' 
+				b[num_l_to][num_to] = piece
 				self.board.update_board(b)
 				if piece in black:
 					self.player1.dead_pieces(target)
@@ -190,14 +196,14 @@ class Piece():
 		BIshop = Can only move diagonally
 		
 	"""	
-	def is_valid_move_rook(move_from,move_to,board):
+	def is_valid_move_rook(move_from, move_to, board):
 		if int(move_from[1]) == int(move_to[1]) or move_from[0] == move_to[0]:
-			return check_updown(move_from, move_to,board)
+			return self.check_updown(move_from, move_to,board)
 		print(f'8: Movimento inválido.')
 		return False
 		
 	def is_valid_move_bishop(move_from,move_to,board):
-		return check_diagonal(move_from,move_to,board)
+		return self.check_diagonal(move_from,move_to,board)
 
 	def is_valid_move_queen(move_from,move_to,board):
 		
@@ -207,11 +213,17 @@ class Piece():
 			if move_to[0] == col[i]:
 				num_to = i
 		
-		if abs(num_from_ - num_to) == abs(int(move_from[1]) - int(move_to[1])):
-			return check_diagonal(move_from,move_to,board)			
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i
 		
-		if num_from_ == num_to or int(move_from[1]) == int(move_to[1]):
-			return check_updown(move_from,move_to,board)
+		if abs(num_from_ - num_to) == abs(num_l_from - num_l_to):
+			return self.check_diagonal(move_from,move_to,board)			
+		
+		if num_from_ == num_to or num_l_from == num_l_to:
+			return self.check_updown(move_from,move_to,board)
 		
 		print(f'8: Movimento inválido.')
 		return False
@@ -227,9 +239,15 @@ class Piece():
 			if move_to[0] == col[i]:
 				num_to = i		
 		
-		if abs(num_from_ - num_to) == 2 and abs(int(move_from[1]) - int(move_to[1])) == 1:
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i
+		
+		if abs(num_from_ - num_to) == 2 and abs(num_l_from - num_l_to) == 1:
 			return True			
-		if abs(num_from_ - num_to) == 1 and abs(int(move_from[1]) - int(move_to[1])) == 2:
+		if abs(num_from_ - num_to) == 1 and abs(num_l_from - num_l_to) == 2:
 			return True
 		
 		print(f'8: Movimento inválido.')
@@ -246,19 +264,25 @@ class Piece():
 				num_from_ = i
 			if move_to[0] == col[i]:
 				num_to = i
+				
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i
 		
 		if move_from[1] == move_to[1]:
 			smaller_y = num_from_ if num_from_ < num_to else num_to
 			bigger_y =  num_from_ if num_from_ > num_to else num_to
 			
 			for i in range(smaller_y +1, bigger_y):
-				if board[int(move_from[1])][i] != ' ':
+				if board[num_l_from][i] != ' ':
 					print(f'13: Caminho bloqueado.')
 					return False
 			return True
 		else:
-			smaller_x = int(move_from[1]) if int(move_from[1]) < int(move_to[1]) else int(move_to[1])
-			bigger_x =  int(move_from[1]) if int(move_from[1]) > int(move_to[1]) else int(move_to[1])
+			smaller_x = (num_l_from) if (num_l_from) < (num_l_to) else (num_l_to)
+			bigger_x =  (num_l_from) if (num_l_from) > (num_l_to) else (num_l_to)
 			
 			for i in range(smaller_x +1, bigger_x):
 				if board[i][num_from_] != ' ':
@@ -268,27 +292,32 @@ class Piece():
 	
 	# Check if there is one or more pieces in the middle of the way in the diagonal 
 	def check_diagonal(move_from,move_to,board):
-		
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
 				num_from_ = i
 			if move_to[0] == col[i]:
 				num_to = i
+
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i
 		
-		if  abs( int(move_from[1]) - int(move_to[1])) != abs( num_from_ - num_to) :
+		if  abs( num_l_from - num_l_to) != abs( num_from_ - num_to) :
 			print(f'8: Movimento Inválido.')
 			return
 		
-		x = 1 if int(move_to[1]) - int(move_from[1]) > 0 else -1
+		x = 1 if (num_l_to) - (num_l_from) > 0 else -1
 		y = 1 if num_to - num_from_ > 0 else -1
 		
-		i =  int(move_from[1]) + x
+		i =  (num_l_from) + x
 		j =  num_from_ + y
 		
 		if x == 1:
-			i < int(move_to[1])
+			i < (num_l_to)
 		else:
-			i > int(move_to[1])
+			i > (num_l_to)
 		
 		while(i):
 			if board[i][j] != ' ':
