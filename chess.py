@@ -75,6 +75,7 @@ class Game():
 			print(f'5: Não pode comer sua própria peça')
 			return
 		
+		
 		if self.is_valid_move(move_from, move_to, b, piece):
 		
 			if target == ' ':
@@ -92,7 +93,7 @@ class Game():
 				
 			if piece in white:
 				self.turn = True
-			if piece in black:
+			elif piece in black:
 				self.turn = False 
 		else:
 			print(f'8: Movimento inválido.')
@@ -235,7 +236,29 @@ class Piece():
 		return False
 	
 	def is_valid_move_king(self,move_from,move_to,board):
-		pass
+		
+		for i in range(len(col)):
+			if move_from[0] == col[i]:
+				num_from_ = i
+			if move_to[0] == col[i]:
+				num_to = i
+		
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i
+		
+		if abs(num_l_from - num_l_to) > 1:
+			print(f'8: Movimento Inválido')
+			return False 
+		if abs(num_from_ - num_to) > 1:
+			print(f'8: Movimento Inválido')
+			return False 
+		
+		# TO DO CHECK CONDITIONS
+		
+		return True		
 
 	def is_valid_move_knight(self,move_from,move_to,board):
 		
@@ -260,7 +283,34 @@ class Piece():
 		return False
 
 	def is_valid_move_pawn(self,move_from,move_to,board):
-		pass
+	
+		for i in range(len(col)):
+			if move_from[0] == col[i]:
+				num_from_ = i
+			if move_to[0] == col[i]:
+				num_to = i
+				
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i		
+		
+		if num_from_ != num_to:
+			print(f'8: Movimento Inválido.')
+			return False
+		
+		if num_l_from == 1 or num_l_from == 6:
+			if abs(num_l_from - num_l_to) > 2:
+				print(f'8: Movimento Inválido.')
+				return False
+			return True
+		else:
+			if abs(num_l_from - num_l_to) > 1:
+				print(f'Movimento Inválido.')
+				return False
+			return True
+		return True 
 	
 	# Check if there is one or more pieces in the middle of the way in the horizontal or vertical direction
 	def check_updown(self,move_from, move_to, board):
@@ -331,7 +381,24 @@ class Piece():
 				return False
 			i += x
 			j += y
+	
+	def king_check(self,move_from,move_to,board):
+
+		for i in range(len(col)):
+			if move_from[0] == col[i]:
+				num_from_ = i
+			if move_to[0] == col[i]:
+				num_to = i
+
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i
 		
+		# TO DO
+		
+		return False
 		
 if __name__ == "__main__":
 	chess = Game()
@@ -344,8 +411,8 @@ if __name__ == "__main__":
 		if len(list(move)) != 5:
 			print(f'7: Formato de entrada incorreto. Formato: e2 e4')
 		
-		move_from, move_to = chess.transform_input(move)
-		
+		move_from, move_to = chess.transform_input(move)	
+				
 		chess.move(move_from,move_to)
 		
 		chess.board.print_board()
