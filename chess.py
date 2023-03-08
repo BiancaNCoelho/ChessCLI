@@ -22,6 +22,9 @@ class Game():
 		# Promotes the Pawn
 		pass
 	
+	def update_turn(self,turn):
+		self.turn = turn
+	
 	def is_valid_move(self,move_from, move_to, board, piece):
 		
 		p = Piece(move_to,move_from,board)
@@ -92,9 +95,11 @@ class Game():
 					self.player2.dead_pieces(target)
 				
 			if piece in white:
-				self.turn = True
+				turn = False
+				self.update_turn(turn)
 			elif piece in black:
-				self.turn = False 
+				turn = True 
+				self.update_turn(turn)
 		else:
 			print(f'8: Movimento inválido.')
 			return
