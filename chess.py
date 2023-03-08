@@ -14,7 +14,6 @@ class Game():
 	"""
 	def __init__(self):
 		self.board = Board()
-		self.pieces = Piece()
 		self.player1 = Player('white',1)
 		self.player2 = Player('black',2)
 		self.turn = True
@@ -24,19 +23,21 @@ class Game():
 		pass
 	
 	def is_valid_move(self,move_from, move_to, board, piece):
+		
+		p = Piece(move_to,move_from,board)
 
 		if piece == 'p' or piece == 'P':
-			return self.pieces.is_valid_move_pawn(move_from, move_to, board)
+			return p.is_valid_move_pawn(move_from, move_to, board)
 		if piece == 'b' or piece == 'B':
-			return self.pieces.is_valid_move_bishop(move_from, move_to, board)
+			return p.is_valid_move_bishop(move_from, move_to, board)
 		if piece == 'k' or piece == 'K':
-			return self.pieces.is_valid_move_king(move_from, move_to, board)
+			return p.is_valid_move_king(move_from, move_to, board)
 		if piece == 'q' or piece == 'Q':
-			return self.pieces.is_valid_move_queen(move_from, move_to, board)
+			return p.is_valid_move_queen(move_from, move_to, board)
 		if piece == 'r' or piece == 'R':
-			return self.pieces.is_valid_move_rook(move_from, move_to, board)
+			return p.is_valid_move_rook(move_from, move_to, board)
 		if piece == 'n' or piece == 'N':
-			return self.pieces.is_valid_move_knight(move_from, move_to, board)
+			return p.is_valid_move_knight(move_from, move_to, board)
 		
 		return False
 		
@@ -195,17 +196,22 @@ class Piece():
 		Knight = Can only move L shaped (2 squares, 1 square) in any direction
 		BIshop = Can only move diagonally
 		
-	"""	
-	def is_valid_move_rook(move_from, move_to, board):
+	"""
+	def __init__(self,move_to,move_from,board):
+		self.move_to = move_to
+		self.move_from = move_from
+		self.board = board
+	
+	def is_valid_move_rook(self,move_from, move_to, board):
 		if int(move_from[1]) == int(move_to[1]) or move_from[0] == move_to[0]:
 			return self.check_updown(move_from, move_to,board)
 		print(f'8: Movimento inválido.')
 		return False
 		
-	def is_valid_move_bishop(move_from,move_to,board):
+	def is_valid_move_bishop(self,move_from,move_to,board):
 		return self.check_diagonal(move_from,move_to,board)
 
-	def is_valid_move_queen(move_from,move_to,board):
+	def is_valid_move_queen(self,move_from,move_to,board):
 		
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
@@ -228,10 +234,10 @@ class Piece():
 		print(f'8: Movimento inválido.')
 		return False
 	
-	def is_valid_move_king(move_from,move_to,board):
+	def is_valid_move_king(self,move_from,move_to,board):
 		pass
 
-	def is_valid_move_knight(move_from,move_to,board):
+	def is_valid_move_knight(self,move_from,move_to,board):
 		
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
@@ -253,11 +259,11 @@ class Piece():
 		print(f'8: Movimento inválido.')
 		return False
 
-	def is_valid_move_pawn(move_from,move_to,board):
+	def is_valid_move_pawn(self,move_from,move_to,board):
 		pass
 	
 	# Check if there is one or more pieces in the middle of the way in the horizontal or vertical direction
-	def check_updown(move_from, move_to, board):
+	def check_updown(self,move_from, move_to, board):
 		
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
@@ -291,7 +297,7 @@ class Piece():
 			return True
 	
 	# Check if there is one or more pieces in the middle of the way in the diagonal 
-	def check_diagonal(move_from,move_to,board):
+	def check_diagonal(self,move_from,move_to,board):
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
 				num_from_ = i
