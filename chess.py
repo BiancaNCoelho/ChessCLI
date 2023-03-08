@@ -186,7 +186,7 @@ class Player():
 		
 	def list_deadpieces(self):
 		for i in self.dead_pieces:
-			print(f'{i}: {dead_pieces[i]}')
+			print(f'{i}: {self.dead_pieces[i]}')
 	
 	def getDead_pieces(self):
 		return self.dead_pieces
@@ -315,6 +315,7 @@ class Piece():
 				print(f'Movimento Inválido.')
 				return False
 			return True
+		if abs(num_l_from - num_l_to)
 		return True 
 	
 	# Check if there is one or more pieces in the middle of the way in the horizontal or vertical direction
@@ -367,7 +368,7 @@ class Piece():
 		
 		if  abs( num_l_from - num_l_to) != abs( num_from_ - num_to) :
 			print(f'8: Movimento Inválido.')
-			return
+			return False
 		
 		x = 1 if (num_l_to) - (num_l_from) > 0 else -1
 		y = 1 if num_to - num_from_ > 0 else -1
@@ -386,6 +387,8 @@ class Piece():
 				return False
 			i += x
 			j += y
+		
+		return True
 	
 	def king_check(self,move_from,move_to,board):
 
