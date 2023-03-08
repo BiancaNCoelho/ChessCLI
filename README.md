@@ -1,7 +1,7 @@
 # ChessCLI
 Simple chess game using command line.
 
-##Contibutor(s)
+## Contibutor(s)
 Bianca Nunes Coelho (BiancaNCoelho), Computer Engineering Student at Universidade Federal de Pelotas(UFPEL)
 
 ## Run
