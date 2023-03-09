@@ -14,8 +14,8 @@ class Game():
 	"""
 	def __init__(self):
 		self.board = Board()
-		self.player1 = Player('white',1)
-		self.player2 = Player('black',2)
+		#self.player1 = Player('white', 1)
+		#self.player2 = Player('black', 2)
 		self.turn = True
 			
 	def promotion(self):
@@ -25,12 +25,15 @@ class Game():
 	def update_turn(self,turn):
 		self.turn = turn
 	
+	def get_turn(self):
+		return self.turn
+	
 	def is_valid_move(self,move_from, move_to, board, piece):
 		
 		p = Piece(move_to,move_from,board)
 
 		if piece == 'p' or piece == 'P':
-			return p.is_valid_move_pawn(move_from, move_to, board)
+			return p.is_valid_move_pawn(move_from, move_to, board, self.turn)
 		if piece == 'b' or piece == 'B':
 			return p.is_valid_move_bishop(move_from, move_to, board)
 		if piece == 'k' or piece == 'K':
@@ -82,18 +85,19 @@ class Game():
 		if self.is_valid_move(move_from, move_to, b, piece):
 		
 			if target == ' ':
-				b[num_l_from][num_from]	= ' ' 
+				b[num_l_from][num_from]	= ' '
 				b[num_l_to][num_to] = piece
 				self.board.update_board(b)						
 			if target in black or target in white:
 				b[num_l_from][num_from]	= ' ' 
 				b[num_l_to][num_to] = piece
 				self.board.update_board(b)
+				"""
 				if piece in black:
 					self.player1.dead_pieces(target)
 				if piece in white:
 					self.player2.dead_pieces(target)
-				
+				"""
 			if piece in white:
 				turn = False
 				self.update_turn(turn)
@@ -140,6 +144,29 @@ class Game():
 		
 		return None
 
+class Player():
+	"""	
+		Player Class
+	
+	"""
+	def __init__(self, color, pNumber):
+		self.color = color
+		self.pNumber = pNumber
+		self.dead_pieces = []
+	
+	def getPlayer(self):
+		return {'color': self.color, 'pNumber': self.pNumber}
+
+	def dead_pieces(self, piece):
+		self.dead_pieces.append(piece)
+		
+	def list_deadpieces(self):
+		for i in self.dead_pieces:
+			print(f'{i}: {self.dead_pieces[i]}')
+	
+	def getDead_pieces(self):
+		return self.dead_pieces
+	
 class Board():
 	"""
 		Board Class.
@@ -168,28 +195,6 @@ class Board():
 	
 	def update_board(self,board):
 		self.board = board
-
-class Player():
-	"""
-		Player Class
-	"""
-	def __init__(self, color, pNumber):
-		self.color = color
-		self.pNumber = pNumber
-		self.dead_pieces = []
-	
-	def getPlayer(self):
-		return {'color': self.color, 'pNumber': self.pNumber}
-
-	def dead_pieces(self, piece):
-		self.dead_pieces.append(piece)
-		
-	def list_deadpieces(self):
-		for i in self.dead_pieces:
-			print(f'{i}: {self.dead_pieces[i]}')
-	
-	def getDead_pieces(self):
-		return self.dead_pieces
 
 class Piece():
 	"""
@@ -287,7 +292,7 @@ class Piece():
 		print(f'8: Movimento inválido.')
 		return False
 
-	def is_valid_move_pawn(self,move_from,move_to,board):
+	def is_valid_move_pawn(self,move_from,move_to,board,turn):
 	
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
@@ -299,11 +304,23 @@ class Piece():
 			if move_from[1] == l[i]:
 				num_l_from = i
 			if move_to[1] == l[i]:
-				num_l_to = i		
+				num_l_to = i	
+					
+		target = board[num_l_to][num_to]
 		
-		if num_from_ != num_to:
+		if num_from_ != num_to: 
+			if target in white or target in black:
+				if abs(num_l_from - num_l_to) == 1 and abs(num_from_ - num_to) == 1:
+					return True 
+
 			print(f'8: Movimento Inválido.')
 			return False
+		
+		piece = board[num_l_from][num_from_]
+		
+		if self.pawn_behind(piece,num_l_from,num_l_to,turn):
+			print(f'8: Movimento Inválido.')
+			return False			
 		
 		if num_l_from == 1 or num_l_from == 6:
 			if abs(num_l_from - num_l_to) > 2:
@@ -315,8 +332,23 @@ class Piece():
 				print(f'Movimento Inválido.')
 				return False
 			return True
-		if abs(num_l_from - num_l_to)
-		return True 
+			
+		return True
+		
+	# Verifies if pawn is being moved to a position "below" it  
+	def pawn_behind(self,piece, num_l_from, num_l_to,turn):
+		if turn:
+			if piece in white:
+				if num_l_from - num_l_to < 0:
+					print(f'8: Moviento Inválido.')
+					return True
+		else:
+			if piece in black:
+				if num_l_from - num_l_to > 0:
+					print(f'8: Moviento Inválido.')
+					return True
+		return False
+	
 	
 	# Check if there is one or more pieces in the middle of the way in the horizontal or vertical direction
 	def check_updown(self,move_from, move_to, board):
@@ -366,7 +398,7 @@ class Piece():
 			if move_to[1] == l[i]:
 				num_l_to = i
 		
-		if  abs( num_l_from - num_l_to) != abs( num_from_ - num_to) :
+		if  abs( num_l_from - num_l_to) != abs( num_from_ - num_to):
 			print(f'8: Movimento Inválido.')
 			return False
 		
@@ -376,12 +408,7 @@ class Piece():
 		i =  (num_l_from) + x
 		j =  num_from_ + y
 		
-		if x == 1:
-			i < (num_l_to)
-		else:
-			i > (num_l_to)
-		
-		while(i):
+		while(i < num_l_to if x==1 else i > num_l_to):
 			if board[i][j] != ' ':
 				print(f'13: Caminho bloqueado.')
 				return False
@@ -390,7 +417,7 @@ class Piece():
 		
 		return True
 	
-	def king_check(self,move_from,move_to,board):
+	def king_check(self,move_from,move_to,board,turn):
 
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
@@ -404,10 +431,20 @@ class Piece():
 			if move_to[1] == l[i]:
 				num_l_to = i
 		
-		# TO DO
+		###
 		
 		return False
+	
+	def check_knight(self, king_pos, board,turn):
 		
+		pass
+	
+	def check_UD(self, king_pos, board,turn):
+		pass
+
+	def check_HV(self, king_pos, board,turn):
+		pass
+
 if __name__ == "__main__":
 	chess = Game()
 	chess.board.print_board()
